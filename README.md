@@ -25,9 +25,6 @@ YOLO Annotator 是一个集成了图像标注、模型训练和目标检测的�
 - **AI 辅助标注**
   - 自动检测和标注
   - 批量 AI 标注
-  - SAM 分割支持
-  - GroundingDINO 文本提示检测
-  - RT-DETR 检测
 
 - **模型训练**
   - 支持 YOLOv8/YOLO26 系列模型
@@ -40,13 +37,9 @@ YOLO Annotator 是一个集成了图像标注、模型训练和目标检测的�
   - 图像检测
   - 视频检测
   - 摄像头实时检测
-  - 批量检测
 
 - **格式导出**
   - YOLO 格式
-  - COCO 格式
-  - Pascal VOC 格式
-  - 自定义格式
 
 ## 技术栈
 
@@ -250,8 +243,6 @@ dotnet run
 
 1. **选择导出格式**
    - YOLO 格式（.txt）
-   - COCO 格式（.json）
-   - Pascal VOC 格式（.xml）
 
 2. **导出数据**
    - 打开"导出"对话框
