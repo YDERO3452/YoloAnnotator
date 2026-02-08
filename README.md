@@ -1,5 +1,12 @@
 # YOLO Annotator - 智能图像标注工具
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![YOLO](https://img.shields.io/badge/YOLO-v8%20%7C%20v26-00FFFF)](https://github.com/ultralytics/ultralytics)
+
 一个功能强大的 YOLO 图像标注和训练工具，支持多种标注类型、AI 辅助标注、模型训练和实时检测。
 
 ## 项目简介
@@ -375,6 +382,12 @@ task: detect
 
 欢迎提交 Issue 和 Pull Request！
 
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 提交 Pull Request
+
 ## 许可证
 
 本项目采用 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
@@ -389,7 +402,10 @@ MIT 许可证允许您：
 
 ## 联系方式
 
-如有问题或建议，请提交 Issue。
+- 项目地址：[https://github.com/YDERO3452/YoloAnnotator](https://github.com/YDERO3452/YoloAnnotator)
+- 问题反馈：[Issues](https://github.com/YDERO3452/YoloAnnotator/issues)
+
+如有问题或建议，欢迎提交 Issue 或 Pull Request。
 
 ---
 
