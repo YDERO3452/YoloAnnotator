@@ -1,0 +1,221 @@
+<Window x:Class="YoloAnnotator.CameraRealtimeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="摄像头实时检测" Height="700" Width="1000"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BackgroundBrush}" ResizeMode="CanResize"
+        WindowStyle="None"
+        Closing="Window_Closing">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <!-- 标题栏按钮样式 -->
+        <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" Padding="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource TitleBarButtonHover}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 关闭按钮样式 -->
+        <Style x:Key="TitleBarCloseButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonStyle}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource TitleBarCloseHover}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <!-- 自定义标题栏 -->
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 自定义标题栏 -->
+        <Border Grid.Row="0" Background="{StaticResource TitleBarBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 标题 -->
+                <TextBlock Grid.Column="0" Text="摄像头实时检测" FontWeight="SemiBold" FontSize="12"
+                          VerticalAlignment="Center" Margin="12,0" Foreground="{StaticResource TextPrimaryBrush}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
+                                    <Setter Property="Foreground" Value="#666666"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <!-- 窗口控制按钮 -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button Name="BtnMinimize" Style="{StaticResource TitleBarButtonStyle}" Click="BtnMinimize_Click">
+                        <Path Data="M0,8 L16,8" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
+                              Stretch="Uniform" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                    <Button Name="BtnMaximize" Style="{StaticResource TitleBarButtonStyle}" Click="BtnMaximize_Click">
+                        <Path Data="M0,0 L12,0 L12,12 L0,12 Z" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
+                              Stretch="Uniform" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                    <Button Name="BtnRestore" Style="{StaticResource TitleBarButtonStyle}" Click="BtnMaximize_Click" Visibility="Collapsed">
+                        <Path Data="M0,2 L12,2 L12,14 L0,14 Z M2,2 L2,0 L14,0 L14,12 L12,12" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
+                              Stretch="Uniform" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                    <Button Name="BtnClose" Style="{StaticResource TitleBarCloseButtonStyle}" Click="BtnClose_Click">
+                        <Path Data="M0,0 L12,12 M12,0 L0,12" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
+                              Stretch="Uniform" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 标题栏 -->
+        <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+            <Grid Margin="20,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="📷" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Text="摄像头实时检测" FontWeight="SemiBold" FontSize="16" VerticalAlignment="Center" Foreground="{StaticResource TextPrimaryBrush}"/>
+                </StackPanel>
+
+                <Button Grid.Column="1" Content="关闭" Click="BtnClose_Click"
+                        Style="{StaticResource SecondaryButtonStyle}" Width="80" Height="32"/>
+            </Grid>
+        </Border>
+
+        <!-- 主内容区 -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" MinWidth="240"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧控制面板 -->
+            <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16,12">
+
+                        <!-- 摄像头控制 -->
+                        <Expander Header="📷 摄像头控制" IsExpanded="True" Background="Transparent"
+                                 BorderThickness="0" Foreground="{StaticResource TextPrimaryBrush}" Padding="0,4" Margin="0,0,0,12">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBlock Text="摄像头ID" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
+                                <ComboBox Name="CboCameraId" Height="32" Margin="0,0,0,12">
+                                    <ComboBoxItem Content="摄像头 0" Tag="0" IsSelected="True"/>
+                                    <ComboBoxItem Content="摄像头 1" Tag="1"/>
+                                    <ComboBoxItem Content="摄像头 2" Tag="2"/>
+                                </ComboBox>
+
+                                <TextBlock Text="分辨率" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,6"/>
+                                <ComboBox Name="CboResolution" Height="32" Margin="0,0,0,12">
+                                    <ComboBoxItem Content="640×480" Tag="640" IsSelected="True"/>
+                                    <ComboBoxItem Content="1280×720" Tag="1280"/>
+                                    <ComboBoxItem Content="1920×1080" Tag="1920"/>
+                                </ComboBox>
+
+                                <Button Name="BtnStartCamera" Content="启动摄像头" Click="BtnStartCamera_Click"
+                                        Style="{StaticResource PrimaryButtonStyle}" Height="32" Margin="0,2"/>
+                                <Button Name="BtnStopCamera" Content="停止摄像头" Click="BtnStopCamera_Click"
+                                        Style="{StaticResource SecondaryButtonStyle}" Height="32" Margin="0,2" IsEnabled="False"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- 实时检测功能 -->
+                        <Expander Header="🎯 实时检测" IsExpanded="True" Background="Transparent"
+                                 BorderThickness="0" Foreground="{StaticResource TextPrimaryBrush}" Padding="0,4" Margin="0,0,0,12">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBlock Name="TxtDetectHint" Text="请先启动摄像头"
+                                          FontSize="11" Foreground="#f59e0b" Margin="0,0,0,12" TextWrapping="Wrap"/>
+
+                                <Button Name="BtnFaceDetect" Content="人脸检测" Click="BtnFaceDetect_Click"
+                                        Style="{StaticResource PrimaryButtonStyle}" Height="32" Margin="0,2" IsEnabled="False"/>
+                                <Button Name="BtnLaneDetect" Content="车道线检测" Click="BtnLaneDetect_Click"
+                                        Style="{StaticResource PrimaryButtonStyle}" Height="32" Margin="0,2" IsEnabled="False"/>
+                                <Button Name="BtnHandDetect" Content="手势识别" Click="BtnHandDetect_Click"
+                                        Style="{StaticResource PrimaryButtonStyle}" Height="32" Margin="0,2" IsEnabled="False"/>
+                                <Button Name="BtnStopDetect" Content="停止检测" Click="BtnStopDetect_Click"
+                                        Style="{StaticResource SecondaryButtonStyle}" Height="32" Margin="0,2" IsEnabled="False"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- 检测结果 -->
+                        <Expander Header="📊 检测结果" IsExpanded="True" Background="Transparent"
+                                 BorderThickness="0" Foreground="{StaticResource TextPrimaryBrush}" Padding="0,4" Margin="0,0,0,12">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBlock Text="当前操作：" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                                <TextBlock Name="TxtCurrentOperation" Text="无" FontSize="12" Margin="0,0,0,12" Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                                <TextBlock Text="检测数量：" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                                <TextBlock Name="TxtDetectionCount" Text="0" FontSize="12" Margin="0,0,0,12" Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                                <TextBlock Text="FPS：" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                                <TextBlock Name="TxtFPS" Text="0" FontSize="12" Margin="0,0,0,12" Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </StackPanel>
+                        </Expander>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- 右侧视频显示区 -->
+            <Border Grid.Column="1" Background="{StaticResource BackgroundBrush}" Margin="16">
+                <Grid>
+                    <Image Name="CameraImage" Stretch="Uniform"/>
+                    <TextBlock Name="TxtNoCamera" Text="点击'启动摄像头'开始使用"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="14"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 状态栏 -->
+        <Border Grid.Row="3" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0">
+            <Grid Margin="20,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Name="TxtStatus" Text="就绪" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Name="TxtCameraInfo" Text="" Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

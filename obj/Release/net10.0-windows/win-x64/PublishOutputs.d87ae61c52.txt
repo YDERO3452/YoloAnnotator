@@ -1,0 +1,2 @@
+D:\YoloAnnotator\Release_Package\frontend\YoloAnnotator.pdb
+D:\YoloAnnotator\Release_Package\frontend\YoloAnnotator.exe

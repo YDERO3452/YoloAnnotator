@@ -1,0 +1,195 @@
+<Window x:Class="YoloAnnotator.PolygonEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="多边形编辑" Height="700" Width="1000"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BackgroundBrush}">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="AppResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <!-- 工具按钮样式 -->
+            <Style x:Key="ToolButtonStyle" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                <Setter Property="Width" Value="80"/>
+                <Setter Property="Height" Value="36"/>
+                <Setter Property="Margin" Value="4,0"/>
+            </Style>
+            
+            <!-- 激活的工具按钮样式 -->
+            <Style x:Key="ActiveToolButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                <Setter Property="Width" Value="80"/>
+                <Setter Property="Height" Value="36"/>
+                <Setter Property="Margin" Value="4,0"/>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- 工具栏 -->
+        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" 
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" 
+                Padding="12,8">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="编辑工具：" VerticalAlignment="Center" 
+                          Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,12,0"/>
+                
+                <Button Name="BtnSelectMode" Content="选择" Click="BtnSelectMode_Click"
+                        Style="{StaticResource ActiveToolButtonStyle}"/>
+                
+                <Button Name="BtnAddVertex" Content="添加顶点" Click="BtnAddVertex_Click"
+                        Style="{StaticResource ToolButtonStyle}"/>
+                
+                <Button Name="BtnDeleteVertex" Content="删除顶点" Click="BtnDeleteVertex_Click"
+                        Style="{StaticResource ToolButtonStyle}"/>
+                
+                <Separator Width="1" Margin="8,0" Background="{StaticResource BorderBrush}"/>
+                
+                <Button Name="BtnSimplify" Content="简化" Click="BtnSimplify_Click"
+                        Style="{StaticResource ToolButtonStyle}"/>
+                
+                <Button Name="BtnSmooth" Content="平滑" Click="BtnSmooth_Click"
+                        Style="{StaticResource ToolButtonStyle}"/>
+                
+                <Separator Width="1" Margin="8,0" Background="{StaticResource BorderBrush}"/>
+                
+                <Button Name="BtnUndo" Content="撤销" Click="BtnUndo_Click"
+                        Style="{StaticResource ToolButtonStyle}"/>
+                
+                <Button Name="BtnRedo" Content="重做" Click="BtnRedo_Click"
+                        Style="{StaticResource ToolButtonStyle}"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- 主编辑区域 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- 画布区域 -->
+            <Border Grid.Column="0" Background="{StaticResource BackgroundBrush}" 
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Canvas Name="ImageCanvas" Background="#2a2a2a">
+                            <Image Name="DisplayImage" Stretch="None"/>
+                            <Canvas Name="PolygonCanvas" Background="Transparent"
+                                    MouseLeftButtonDown="PolygonCanvas_MouseLeftButtonDown"
+                                    MouseMove="PolygonCanvas_MouseMove"
+                                    MouseLeftButtonUp="PolygonCanvas_MouseLeftButtonUp"/>
+                        </Canvas>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+            
+            <!-- 分隔线 -->
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" 
+                         Background="{StaticResource BorderBrush}"/>
+            
+            <!-- 右侧面板 -->
+            <Border Grid.Column="2" Background="{StaticResource SurfaceBrush}" Padding="12">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <!-- 简化设置 -->
+                        <TextBlock Text="简化设置" FontWeight="Bold" FontSize="14" 
+                                  Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+                        
+                        <TextBlock Text="简化程度：" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider Name="SliderSimplify" Minimum="0.5" Maximum="10" Value="2" 
+                                   TickFrequency="0.5" IsSnapToTickEnabled="True"
+                                   ValueChanged="SliderSimplify_ValueChanged"/>
+                            <TextBlock Grid.Column="1" Name="TxtSimplifyValue" Text="2.0" 
+                                      Foreground="{StaticResource TextPrimaryBrush}" 
+                                      Width="40" TextAlignment="Right" Margin="8,0,0,0"/>
+                        </Grid>
+                        
+                        <!-- 平滑设置 -->
+                        <TextBlock Text="平滑设置" FontWeight="Bold" FontSize="14" 
+                                  Foreground="{StaticResource TextPrimaryBrush}" Margin="0,16,0,8"/>
+                        
+                        <TextBlock Text="平滑度：" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider Name="SliderSmooth" Minimum="1" Maximum="10" Value="3" 
+                                   TickFrequency="1" IsSnapToTickEnabled="True"
+                                   ValueChanged="SliderSmooth_ValueChanged"/>
+                            <TextBlock Grid.Column="1" Name="TxtSmoothValue" Text="3" 
+                                      Foreground="{StaticResource TextPrimaryBrush}" 
+                                      Width="40" TextAlignment="Right" Margin="8,0,0,0"/>
+                        </Grid>
+                        
+                        <!-- 统计信息 -->
+                        <TextBlock Text="多边形信息" FontWeight="Bold" FontSize="14" 
+                                  Foreground="{StaticResource TextPrimaryBrush}" Margin="0,16,0,8"/>
+                        
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Name="TxtVertexCount" Text="顶点数：0" 
+                                      Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                            <TextBlock Name="TxtArea" Text="面积：0" 
+                                      Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                            <TextBlock Name="TxtPerimeter" Text="周长：0" 
+                                      Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        
+                        <!-- 操作提示 -->
+                        <TextBlock Text="操作提示" FontWeight="Bold" FontSize="14" 
+                                  Foreground="{StaticResource TextPrimaryBrush}" Margin="0,16,0,8"/>
+                        
+                        <TextBlock TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" 
+                                  LineHeight="20">
+                            <Run Text="• 选择模式：拖拽顶点调整位置"/>
+                            <LineBreak/>
+                            <Run Text="• 添加顶点：点击边添加新顶点"/>
+                            <LineBreak/>
+                            <Run Text="• 删除顶点：点击顶点删除"/>
+                            <LineBreak/>
+                            <Run Text="• 简化：减少顶点数量"/>
+                            <LineBreak/>
+                            <Run Text="• 平滑：使边缘更圆滑"/>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+        
+        <!-- 状态栏 -->
+        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" 
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" 
+                Padding="12,6">
+            <TextBlock Name="TxtStatus" Text="就绪" 
+                      Foreground="{StaticResource TextSecondaryBrush}"/>
+        </Border>
+        
+        <!-- 底部按钮 -->
+        <Border Grid.Row="3" Background="{StaticResource SurfaceBrush}" 
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" 
+                Padding="12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Name="BtnConfirm" Content="确定" Click="BtnConfirm_Click"
+                        Style="{StaticResource PrimaryButtonStyle}" Width="100" Margin="0,0,8,0"/>
+                <Button Name="BtnCancel" Content="取消" Click="BtnCancel_Click"
+                        Style="{StaticResource SecondaryButtonStyle}" Width="100"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
